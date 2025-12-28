@@ -1,19 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
-import { TASI_STOCKS } from '../constants.ts';
-import { StockData, MarketStats, ViewMode, NewsItem, LiveRoom } from '../types.ts';
-import StockAnalyzer from './StockAnalyzer.tsx';
-import Scanner from './Scanner.tsx';
-import MarketOverview from './MarketOverview.tsx';
-import Calculator from './Calculator.tsx';
-import FinancialAnalysis from './FinancialAnalysis.tsx';
-import NewsSection from './NewsSection.tsx';
-import CommunityHub from './CommunityHub.tsx';
-import LiveRoomView from './LiveRoomView.tsx';
-import TasiModal from './TasiModal.tsx';
-import AiLogo from './AiLogo.tsx';
-import { fetchLiveStocks } from '../services/dataService.ts';
-import { fetchMarketNews } from '../services/newsService.ts';
+import { TASI_STOCKS } from '../constants';
+import { StockData, MarketStats, ViewMode, NewsItem, LiveRoom } from '../types';
+import StockAnalyzer from './StockAnalyzer';
+import Scanner from './Scanner';
+import MarketOverview from './MarketOverview';
+import Calculator from './Calculator';
+import FinancialAnalysis from './FinancialAnalysis';
+import NewsSection from './NewsSection';
+import CommunityHub from './CommunityHub';
+import LiveRoomView from './LiveRoomView';
+import TasiModal from './TasiModal';
+import AiLogo from './AiLogo';
+import { fetchLiveStocks } from '../services/dataService';
+import { fetchMarketNews } from '../services/newsService';
 
 interface DashboardProps {
   onLogout: () => void;
@@ -66,6 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Helper to determine if we are in any scanner-related mode
   const isScannerView = ['SCANNER', 'GAINERS', 'LOSERS', 'VOLUME'].includes(viewMode);
 
   const renderContent = () => {
