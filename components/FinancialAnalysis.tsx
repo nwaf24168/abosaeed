@@ -36,7 +36,6 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ stocks }) => {
       const data = getDetailedFinancials(selectedStock);
       setFinancials(data);
       
-      // توليد التقرير المهيكل الفوري القائم على الأرقام فوراً
       const instantReport = getImmediateFinancialSummary(data);
       setReport(instantReport);
       setIsAiMode(false);
@@ -158,7 +157,6 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ stocks }) => {
       ) : financials && report && (
         <div className="space-y-12 animate-in fade-in duration-300">
           
-          {/* Executive Report Section */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className={`lg:col-span-2 p-12 rounded-[3.5rem] border ${report.status === 'إيجابي' ? 'bg-emerald-500/5 border-emerald-500/20' : report.status === 'سلبي' ? 'bg-rose-500/5 border-rose-500/20' : 'bg-slate-900/40 border-white/5'} relative overflow-hidden shadow-2xl flex flex-col`}>
                <div className="relative z-10 space-y-8 flex-1 flex flex-col">
@@ -189,7 +187,6 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ stocks }) => {
                </div>
             </div>
 
-            {/* Matrix Card */}
             <div className="glass p-10 rounded-[3.5rem] border border-white/5 flex flex-col justify-between shadow-2xl">
                <div className="space-y-10">
                  <h4 className="text-white font-black text-base border-r-6 border-blue-500 pr-6 uppercase tracking-widest">المؤشرات المسجلة</h4>
@@ -216,7 +213,6 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ stocks }) => {
             </div>
           </div>
 
-          {/* New Button Styled for Deep Analysis */}
           <div className="flex flex-col items-center gap-4 py-6">
             {!isAiMode && (
               <button 
@@ -247,7 +243,6 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ stocks }) => {
             )}
           </div>
 
-          {/* Financial Statements (Instant) */}
           <div className="space-y-10">
             <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                <div className="flex items-center gap-6">
@@ -282,49 +277,50 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ stocks }) => {
                            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 border border-blue-500/20">📅</div>
                            <div>
                               <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest block mb-1">سياسة توزيع الشركة</span>
-                              <h4 className="text-white font-black text-xl">توزع الشركة أرباحها بشكل <span className="text-blue-400">{financials.distributionPolicy}</span></h4>
+                              <h4 className="text-white font-black text-xl">توزع الشركة أرباحها بشكل <span className="text-blue-400 font-black">{financials.distributionPolicy}</span></h4>
+                              <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-tight">بناءً على سجل التوزيعات التاريخي المعتمد</p>
                            </div>
                         </div>
-                        <div className="text-left">
+                        <div className="text-left flex flex-col items-end">
                            <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest block mb-1">عائد التوزيعات الحالي</span>
-                           <span className="text-emerald-500 font-black text-2xl font-mono">{financials.dividendYield.toFixed(2)}%</span>
+                           <span className="text-emerald-500 font-black text-3xl font-mono leading-none">{financials.dividendYield.toFixed(2)}%</span>
                         </div>
                       </div>
 
                       <table className="w-full text-right border-collapse">
                         <thead>
                           <tr className="bg-slate-900/95">
-                            <th className="p-8 text-xs font-black text-white border-b border-white/5 uppercase px-10">الفترة السعرية</th>
+                            <th className="p-8 text-xs font-black text-white border-b border-white/5 uppercase px-10">الفترة</th>
                             <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">نوع التوزيع</th>
-                            <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">المبلغ لكل سهم</th>
+                            <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">كم التوزيع (ريال)</th>
                             <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">نسبة التوزيع (%)</th>
-                            <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">أسهم منحة</th>
+                            <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">سهم مقابل كل سهم</th>
                             <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">تاريخ الاستحقاق</th>
                             <th className="p-8 text-xs font-black text-white text-center border-b border-white/5">تاريخ التوزيع</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                           {financials.dividendsHistory.map((div, idx) => (
-                            <tr key={idx} className="hover:bg-white/5 transition-colors">
-                              <td className="p-6 px-10 text-sm font-bold text-white">{div.period}</td>
+                            <tr key={idx} className="hover:bg-white/5 transition-colors group">
+                              <td className="p-6 px-10 text-sm font-bold text-white group-hover:text-blue-400 transition-colors">{div.period}</td>
                               <td className="p-6 text-center">
-                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black ${div.type === 'CASH' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black border ${div.type === 'CASH' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
                                   {div.type === 'CASH' ? 'نقدي' : 'أسهم منحة'}
                                 </span>
                               </td>
                               <td className="p-6 text-center font-mono font-black text-white">
                                 {div.type === 'CASH' ? `${div.amount.toFixed(2)} ر.س` : '-'}
                               </td>
-                              <td className="p-6 text-center font-mono font-black text-blue-400">
+                              <td className="p-6 text-center font-mono font-black text-emerald-400">
                                 {div.percentage}%
                               </td>
-                              <td className="p-6 text-center font-mono font-black text-amber-500">
+                              <td className="p-6 text-center font-mono font-black text-blue-400">
                                 {div.bonusRatio || '-'}
                               </td>
                               <td className="p-6 text-center font-mono font-bold text-slate-300">
                                 {div.eligibilityDate}
                               </td>
-                              <td className="p-6 text-center font-mono font-bold text-slate-300">
+                              <td className="p-6 text-center font-mono font-bold text-slate-400 bg-white/5">
                                 {div.paymentDate}
                               </td>
                             </tr>

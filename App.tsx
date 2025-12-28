@@ -5,7 +5,8 @@ import Dashboard from './components/Dashboard';
 import Auth from './components/Auth';
 
 const App: React.FC = () => {
-  // استخدام دالة المبادأة لضمان قراءة الجلسة فوراً قبل الرندر الأول
+  // ملاحظة للمطور: تم تعطيل التحقق الإجباري مؤقتاً بناءً على طلب المستخدم
+  // الحالة الأصلية للمصادقة محفوظة هنا
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       return localStorage.getItem('abosaeed_auth') === 'true';
@@ -26,19 +27,25 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('abosaeed_auth');
+    // في الوضع المؤقت، لا نحتاج لإعادة التوجيه لصفحة الدخول
   };
 
-  // تأكيد حفظ الجلسة في حال تغيرت الحالة يدوياً
   useEffect(() => {
     if (isAuthenticated) {
       localStorage.setItem('abosaeed_auth', 'true');
     }
   }, [isAuthenticated]);
 
-  if (!isAuthenticated) {
-    return <Auth onLogin={handleLogin} />;
-  }
+  /**
+   * تم إلغاء حجب الصفحة مؤقتاً.
+   * للعودة لنظام الحماية، قم بإعادة تفعيل الشرط أدناه:
+   * 
+   * if (!isAuthenticated) {
+   *   return <Auth onLogin={handleLogin} />;
+   * }
+   */
 
+  // عرض لوحة التحكم مباشرة
   return <Dashboard onLogout={handleLogout} />;
 };
 

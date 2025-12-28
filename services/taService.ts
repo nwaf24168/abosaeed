@@ -1,5 +1,5 @@
 
-import { StockData, TechnicalAnalysis } from '../types';
+import { StockData, TechnicalAnalysis, AIAnalysis } from '../types';
 
 /**
  * simulated technical analysis calculations based on price action
@@ -35,6 +35,35 @@ export const calculateTechnicalAnalysis = (data: StockData): TechnicalAnalysis =
     resistance,
     trend,
     status
+  };
+};
+
+/**
+ * محرك الاستراتيجية الفنية (بديل الذكاء الاصطناعي)
+ * يقوم ببناء خطة تداول بناءً على المعادلات الفنية الصرفة
+ */
+export const calculateTechnicalStrategy = (stock: StockData, ta: TechnicalAnalysis): AIAnalysis => {
+  let recommendation: 'دخول' | 'انتظار' | 'خروج' = 'انتظار';
+  let note = "";
+  
+  // منطق التوصية
+  if (ta.status === 'POSITIVE' && ta.trend === 'UP') {
+    recommendation = 'دخول';
+    note = `السهم يتداول في اتجاه صاعد فوق المتوسطات المتحركة مع زخم إيجابي (RSI: ${ta.rsi.toFixed(0)}). يتوقع استهداف مستويات المقاومة القريبة.`;
+  } else if (ta.status === 'NEGATIVE' || ta.trend === 'DOWN') {
+    recommendation = 'خروج';
+    note = `يلاحظ ضعف في الزخم وكسر للمتوسطات السعرية. يفضل الخروج أو تخفيف المراكز لتفادي استمرار الهبوط نحو مستويات الدعم.`;
+  } else {
+    recommendation = 'انتظار';
+    note = `السهم يتحرك في نطاق عرضي محايد. يفضل الانتظار حتى اختراق المقاومة ${ta.resistance[0].toFixed(2)} أو الارتداد من الدعم ${ta.support[0].toFixed(2)}.`;
+  }
+
+  return {
+    status: ta.status === 'POSITIVE' ? 'إيجابي' : ta.status === 'NEGATIVE' ? 'سلبي' : 'محايد',
+    recommendation,
+    targets: [ta.resistance[0], ta.resistance[1]],
+    stopLoss: ta.support[0] * 0.98, // وقف الخسارة تحت الدعم الأول بـ 2%
+    note
   };
 };
 
