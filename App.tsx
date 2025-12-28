@@ -1,12 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { AUTH_PASSWORD } from './constants';
-import Dashboard from './components/Dashboard';
-import Auth from './components/Auth';
+import { AUTH_PASSWORD } from './constants.ts';
+import Dashboard from './components/Dashboard.tsx';
+import Auth from './components/Auth.tsx';
 
 const App: React.FC = () => {
-  // ملاحظة للمطور: تم تعطيل التحقق الإجباري مؤقتاً بناءً على طلب المستخدم
-  // الحالة الأصلية للمصادقة محفوظة هنا
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       return localStorage.getItem('abosaeed_auth') === 'true';
@@ -27,25 +25,13 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('abosaeed_auth');
-    // في الوضع المؤقت، لا نحتاج لإعادة التوجيه لصفحة الدخول
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      localStorage.setItem('abosaeed_auth', 'true');
-    }
-  }, [isAuthenticated]);
+  // تأكيد عمل التطبيق فوراً
+  if (!isAuthenticated) {
+    return <Auth onLogin={handleLogin} />;
+  }
 
-  /**
-   * تم إلغاء حجب الصفحة مؤقتاً.
-   * للعودة لنظام الحماية، قم بإعادة تفعيل الشرط أدناه:
-   * 
-   * if (!isAuthenticated) {
-   *   return <Auth onLogin={handleLogin} />;
-   * }
-   */
-
-  // عرض لوحة التحكم مباشرة
   return <Dashboard onLogout={handleLogout} />;
 };
 
