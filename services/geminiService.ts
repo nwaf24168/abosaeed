@@ -2,20 +2,28 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { StockData, TechnicalAnalysis, AIAnalysis, FinancialData, AIFinancialHealth } from "../types";
 
-// Always initialize the client inside the function to ensure the latest API key from process.env is used.
-// Do not initialize at module level or when component renders.
+/**
+ * دالة مساعدة للحصول على مفتاح الـ API بشكل آمن
+ */
+const getSafeApiKey = () => {
+  try {
+    return (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : '';
+  } catch {
+    return '';
+  }
+};
 
 /**
  * Get AI-driven technical analysis for a specific stock
  */
 export const getAIAnalysis = async (stock: StockData, ta: TechnicalAnalysis): Promise<AIAnalysis> => {
-  // Ensure the user has selected an API key for Gemini 3 models as per requirements.
+  const apiKey = getSafeApiKey();
+  
   if (typeof window !== 'undefined' && (window as any).aistudio && !(await (window as any).aistudio.hasSelectedApiKey())) {
     await (window as any).aistudio.openSelectKey();
   }
 
-  // Initialize fresh instance right before usage.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
   
   const prompt = `
     حلل السهم التالي للسوق السعودي (تداول):
@@ -53,11 +61,9 @@ export const getAIAnalysis = async (stock: StockData, ta: TechnicalAnalysis): Pr
       },
     });
 
-    // Access the generated text directly from the property .text
     const jsonOutput = response.text || "{}";
     return JSON.parse(jsonOutput.trim());
   } catch (error: any) {
-    // Reset key selection if entity not found error occurs as per guidelines.
     if (error.message?.includes("Requested entity was not found")) {
       if (typeof window !== 'undefined' && (window as any).aistudio) {
         await (window as any).aistudio.openSelectKey();
@@ -78,13 +84,13 @@ export const getAIAnalysis = async (stock: StockData, ta: TechnicalAnalysis): Pr
  * Get AI-driven financial health analysis for a specific stock
  */
 export const getAIFinancialAnalysis = async (stock: StockData, financials: FinancialData): Promise<AIFinancialHealth> => {
-  // Ensure the user has selected an API key for Gemini 3 models.
+  const apiKey = getSafeApiKey();
+  
   if (typeof window !== 'undefined' && (window as any).aistudio && !(await (window as any).aistudio.hasSelectedApiKey())) {
     await (window as any).aistudio.openSelectKey();
   }
 
-  // Initialize fresh instance right before usage.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
 
   const prompt = `
     أنت الآن "مدقق مالي" صارم وخبير في السوق السعودي. حلل القوائم المالية لشركة ${stock.name}.
@@ -127,11 +133,9 @@ export const getAIFinancialAnalysis = async (stock: StockData, financials: Finan
       },
     });
 
-    // Access the generated text directly from the property .text
     const jsonOutput = response.text || "{}";
     return JSON.parse(jsonOutput.trim());
   } catch (error: any) {
-    // Handling potential key reset requirement.
     if (error.message?.includes("Requested entity was not found")) {
       if (typeof window !== 'undefined' && (window as any).aistudio) {
         await (window as any).aistudio.openSelectKey();

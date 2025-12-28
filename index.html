@@ -26,7 +26,7 @@
         overflow-x: hidden;
         -webkit-tap-highlight-color: transparent;
         user-select: none;
-        overscroll-behavior-y: contain; /* منع سحب الصفحة للأعلى في الموبايل */
+        overscroll-behavior-y: contain;
       }
       .glass {
         background: rgba(15, 23, 42, 0.8);
@@ -35,7 +35,6 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
       }
       
-      /* إخفاء شريط التمرير */
       ::-webkit-scrollbar { display: none; }
       
       .page-transition {
@@ -46,20 +45,46 @@
         to { opacity: 1; transform: scale(1); }
       }
 
-      .safe-area-bottom {
-        padding-bottom: env(safe-area-inset-bottom);
+      /* شاشة التحميل */
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #070b14;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
       }
-      .safe-area-top {
-        padding-top: env(safe-area-inset-top);
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #10b981;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
       }
-
-      /* تحسين استجابة اللمس */
-      button, div[onClick] {
-        cursor: pointer;
-        transition: opacity 0.2s;
+      @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
-      button:active, div[onClick]:active {
-        opacity: 0.7;
+      
+      #error-display {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        background: #ef4444;
+        color: white;
+        padding: 15px;
+        border-radius: 12px;
+        z-index: 10000;
+        font-weight: bold;
+        text-align: center;
       }
     </style>
     <script type="importmap">
@@ -74,6 +99,33 @@
 </script>
   </head>
   <body>
+    <div id="error-display">نعتذر، حدث خطأ أثناء تشغيل التطبيق. يرجى التأكد من اتصال الإنترنت أو تحديث الصفحة.</div>
+    
+    <div id="loading-screen">
+      <div class="loader"></div>
+      <p style="margin-top: 20px; color: #10b981; font-weight: 900; letter-spacing: 1px;">جاري تشغيل منصة أبو سعيد...</p>
+    </div>
+
     <div id="root"></div>
+
+    <script>
+      // معالجة الأخطاء العالمية لمنع الشاشة السوداء
+      window.onerror = function(msg, url, line, col, error) {
+        document.getElementById('loading-screen').style.display = 'none';
+        const errorDiv = document.getElementById('error-display');
+        errorDiv.style.display = 'block';
+        errorDiv.innerHTML = "خطأ تقني: " + msg + "<br><small>تأكد من رفع الملفات بشكل صحيح على GitHub</small>";
+        return false;
+      };
+
+      // إخفاء شاشة التحميل عند جاهزية التطبيق
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loader = document.getElementById('loading-screen');
+          if(loader) loader.style.opacity = '0';
+          setTimeout(() => { if(loader) loader.style.display = 'none'; }, 500);
+        }, 1500);
+      });
+    </script>
   </body>
 </html>
