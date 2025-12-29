@@ -1,38 +1,11 @@
 
-import React, { useState } from 'react';
-import { AUTH_PASSWORD } from './constants.ts';
+import React from 'react';
 import Dashboard from './components/Dashboard.tsx';
-import Auth from './components/Auth.tsx';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('abosaeed_auth') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const handleLogin = (password: string) => {
-    if (password === AUTH_PASSWORD) {
-      setIsAuthenticated(true);
-      localStorage.setItem('abosaeed_auth', 'true');
-      return true;
-    }
-    return false;
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('abosaeed_auth');
-  };
-
   try {
-    // إذا كان المستخدم مسجلاً، اظهر لوحة التحكم، وإلا اظهر شاشة الدخول
-    if (isAuthenticated) {
-      return <Dashboard onLogout={handleLogout} />;
-    }
-    return <Auth onLogin={handleLogin} />;
+    // فتح لوحة التحكم مباشرة دون الحاجة لتسجيل دخول
+    return <Dashboard />;
   } catch (err) {
     console.error("App: Component render error:", err);
     return (

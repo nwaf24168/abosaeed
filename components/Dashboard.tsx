@@ -15,11 +15,7 @@ import AiLogo from './AiLogo.tsx';
 import { fetchLiveStocks } from '../services/dataService.ts';
 import { fetchMarketNews } from '../services/newsService.ts';
 
-interface DashboardProps {
-  onLogout: () => void;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+const Dashboard: React.FC = () => {
   const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<LiveRoom | null>(null);
   const [stocks, setStocks] = useState<StockData[]>([]);
@@ -113,9 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
              <div className="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-2 py-1 rounded-lg border border-emerald-500/20">
                LIVE MT5
              </div>
-             <button onClick={onLogout} className="p-2 text-slate-500">
-               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-             </button>
+             {/* تم إزالة زر تسجيل الخروج */}
           </div>
         </div>
       </header>
