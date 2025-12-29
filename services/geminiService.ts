@@ -1,13 +1,9 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { StockData, TechnicalAnalysis, AIAnalysis, FinancialData, AIFinancialHealth } from "../types";
+import { StockData, TechnicalAnalysis, AIAnalysis, FinancialData, AIFinancialHealth } from "../types.ts";
 
-/**
- * دالة للحصول على المفتاح بشكل آمن جداً
- */
 const getSafeApiKey = (): string => {
   try {
-    // التحقق من وجود المفتاح في بيئة العمل أو في كائن النافذة
     const key = (window as any).process?.env?.API_KEY || (typeof process !== 'undefined' ? process.env.API_KEY : '');
     return key || '';
   } catch {
@@ -17,11 +13,6 @@ const getSafeApiKey = (): string => {
 
 export const getAIAnalysis = async (stock: StockData, ta: TechnicalAnalysis): Promise<AIAnalysis> => {
   const apiKey = getSafeApiKey();
-  
-  if (typeof (window as any).aistudio !== 'undefined' && !(await (window as any).aistudio.hasSelectedApiKey())) {
-    await (window as any).aistudio.openSelectKey();
-  }
-
   const ai = new GoogleGenAI({ apiKey: apiKey || 'temporary_key' });
   
   const prompt = `حلل سهم ${stock.name} (${stock.symbol}) فنياً. السعر: ${stock.price}. RSI: ${ta.rsi}. الاتجاه: ${ta.trend}.`;

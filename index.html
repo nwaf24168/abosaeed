@@ -19,7 +19,6 @@
         margin: 0;
         padding: 0;
         overflow-x: hidden;
-        user-select: none;
       }
       .glass {
         background: rgba(15, 23, 42, 0.8);
@@ -37,7 +36,6 @@
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        transition: opacity 0.5s ease;
       }
       .loader {
         width: 50px;
@@ -53,24 +51,41 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(7, 11, 20, 0.95);
+        background: #070b14;
         z-index: 10000;
-        padding: 20px;
-        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        padding: 20px;
         text-align: center;
       }
     </style>
 
     <script>
-      // شيم (Shim) لبيئة العمل لمنع أخطاء المكتبات في المتصفح
+      // Shim process for libraries that expect it
       window.process = { 
-        env: { 
-          NODE_ENV: 'production',
-          API_KEY: '' 
-        } 
+        env: { NODE_ENV: 'production', API_KEY: '' },
+        cwd: () => '/',
+        platform: 'browser'
+      };
+      
+      // Global error handler
+      window.onerror = function(msg, url, line, col, error) {
+        console.error("Global Error Detected:", msg, error);
+        const overlay = document.getElementById('error-overlay');
+        const msgEl = document.getElementById('error-message');
+        const loader = document.getElementById('loading-screen');
+        
+        if (loader) loader.style.display = 'none';
+        if (overlay) {
+          overlay.style.display = 'flex';
+          msgEl.innerText = msg + (error ? "\n\nDetails: " + error.stack : "");
+        }
+      };
+
+      window.onunhandledrejection = function(event) {
+        console.error("Unhandled Rejection:", event.reason);
+        window.onerror(event.reason?.message || "Unhandled Promise Rejection", "", 0, 0, event.reason);
       };
     </script>
 
@@ -88,57 +103,42 @@
 </script>
   </head>
   <body>
-    <!-- شاشة تنبيه الخطأ -->
-    <div id="error-overlay" style="display: none;">
-      <div class="glass p-8 rounded-3xl border border-rose-500/30 max-w-md">
-        <div class="text-4xl mb-4">⚠️</div>
-        <h2 class="text-xl font-black text-white mb-2">عذراً، حدث خطأ فني</h2>
-        <p id="error-message" class="text-slate-400 text-sm mb-6">فشل في تحميل مكونات النظام</p>
-        <button onclick="location.reload()" class="bg-emerald-600 px-8 py-3 rounded-xl font-bold">تحديث الصفحة</button>
-      </div>
-    </div>
-    
-    <!-- شاشة التحميل الاستباقية -->
     <div id="loading-screen">
       <div class="loader"></div>
-      <p style="margin-top: 24px; color: #10b981; font-weight: 900; font-size: 14px; letter-spacing: 1px;">جاري تشغيل منصة أبو سعيد...</p>
+      <p style="margin-top: 24px; color: #10b981; font-weight: 900; font-size: 14px;">جاري تشغيل منصة أبو سعيد...</p>
+    </div>
+
+    <div id="error-overlay">
+      <div class="glass p-10 rounded-[2.5rem] border border-rose-500/30 max-w-lg w-full">
+        <div class="text-5xl mb-6">⚠️</div>
+        <h2 class="text-2xl font-black text-white mb-4">خطأ في تشغيل النظام</h2>
+        <pre id="error-message" class="text-rose-400 text-[10px] text-left overflow-auto max-h-40 bg-black/40 p-4 rounded-xl mb-6 font-mono"></pre>
+        <button onclick="location.reload()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95">إعادة المحاولة</button>
+      </div>
     </div>
 
     <div id="root"></div>
 
-    <!-- استدعاء ملف التشغيل الرئيسي -->
-    <script type="module" src="/index.tsx"></script>
+    <!-- المدخل الرئيسي للتطبيق -->
+    <script type="module" src="index.tsx"></script>
 
     <script>
-      // معالجة الأخطاء العالمية (Global Error Handling)
-      window.onerror = function(msg, url, line, col, error) {
-        showError(msg);
-        return false;
-      };
-      
-      window.onunhandledrejection = function(event) {
-        showError(event.reason);
-      };
-
-      function showError(msg) {
-        const overlay = document.getElementById('error-overlay');
-        const msgEl = document.getElementById('error-message');
-        const loader = document.getElementById('loading-screen');
-        if(loader) loader.style.display = 'none';
-        if(overlay) {
-          overlay.style.display = 'flex';
-          msgEl.innerText = msg;
-        }
-      }
-
-      // إخفاء شاشة التحميل بمجرد تشغيل React
       window.hideLoader = function() {
+        console.log("Hiding loader...");
         const loader = document.getElementById('loading-screen');
         if(loader) {
           loader.style.opacity = '0';
           setTimeout(() => loader.style.display = 'none', 500);
         }
       };
+      
+      // مهلة زمنية للتحميل في حال فشل الاستدعاء الصامت
+      setTimeout(() => {
+        const loader = document.getElementById('loading-screen');
+        if (loader && loader.style.display !== 'none') {
+          console.warn("Loading timeout: Manual check triggered.");
+        }
+      }, 8000);
     </script>
   </body>
 </html>
