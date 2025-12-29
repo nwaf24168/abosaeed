@@ -62,16 +62,12 @@
     </style>
 
     <script>
-      // Shim process for libraries that expect it
       window.process = { 
-        env: { NODE_ENV: 'production', API_KEY: '' },
-        cwd: () => '/',
-        platform: 'browser'
+        env: { NODE_ENV: 'production', API_KEY: '' }
       };
       
-      // Global error handler
       window.onerror = function(msg, url, line, col, error) {
-        console.error("Global Error Detected:", msg, error);
+        console.error("System Error:", msg, error);
         const overlay = document.getElementById('error-overlay');
         const msgEl = document.getElementById('error-message');
         const loader = document.getElementById('loading-screen');
@@ -79,13 +75,8 @@
         if (loader) loader.style.display = 'none';
         if (overlay) {
           overlay.style.display = 'flex';
-          msgEl.innerText = msg + (error ? "\n\nDetails: " + error.stack : "");
+          msgEl.innerText = msg + (error ? "\n\n" + error.stack : "");
         }
-      };
-
-      window.onunhandledrejection = function(event) {
-        console.error("Unhandled Rejection:", event.reason);
-        window.onerror(event.reason?.message || "Unhandled Promise Rejection", "", 0, 0, event.reason);
       };
     </script>
 
@@ -111,34 +102,24 @@
     <div id="error-overlay">
       <div class="glass p-10 rounded-[2.5rem] border border-rose-500/30 max-w-lg w-full">
         <div class="text-5xl mb-6">⚠️</div>
-        <h2 class="text-2xl font-black text-white mb-4">خطأ في تشغيل النظام</h2>
+        <h2 class="text-2xl font-black text-white mb-4">خطأ في التشغيل</h2>
         <pre id="error-message" class="text-rose-400 text-[10px] text-left overflow-auto max-h-40 bg-black/40 p-4 rounded-xl mb-6 font-mono"></pre>
-        <button onclick="location.reload()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95">إعادة المحاولة</button>
+        <button onclick="location.reload()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl">إعادة المحاولة</button>
       </div>
     </div>
 
     <div id="root"></div>
 
-    <!-- المدخل الرئيسي للتطبيق -->
-    <script type="module" src="index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
 
     <script>
       window.hideLoader = function() {
-        console.log("Hiding loader...");
         const loader = document.getElementById('loading-screen');
         if(loader) {
           loader.style.opacity = '0';
           setTimeout(() => loader.style.display = 'none', 500);
         }
       };
-      
-      // مهلة زمنية للتحميل في حال فشل الاستدعاء الصامت
-      setTimeout(() => {
-        const loader = document.getElementById('loading-screen');
-        if (loader && loader.style.display !== 'none') {
-          console.warn("Loading timeout: Manual check triggered.");
-        }
-      }, 8000);
     </script>
   </body>
 </html>

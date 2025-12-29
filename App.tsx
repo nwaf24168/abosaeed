@@ -4,7 +4,7 @@ import Dashboard from './components/Dashboard.tsx';
 
 const App: React.FC = () => {
   try {
-    // فتح لوحة التحكم مباشرة دون الحاجة لتسجيل دخول
+    // تم إلغاء صفحة تسجيل الدخول تماماً كما طلبت
     return <Dashboard />;
   } catch (err) {
     console.error("App: Component render error:", err);
